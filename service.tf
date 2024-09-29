@@ -6,7 +6,7 @@ resource "aws_ecs_service" "main" {
 
   desired_count = var.service_task_count
 
-  launch_type = var.service_launch_type
+  ##launch_type = var.service_launch_type
 
   deployment_maximum_percent         = 200 #garantir no deploy que todas as tasks novas estarão up pra derrubar as antigas
   deployment_minimum_healthy_percent = 100 #minimo de task rodando
@@ -15,6 +15,15 @@ resource "aws_ecs_service" "main" {
     ##quando um deploy falhar e nao ficar health, automaticamente sera feito rollback pra versao anterior
     enable   = true
     rollback = true
+  }
+
+  dynamic "capacity_provider_strategy" {
+    for_each = var.service_launch_type
+
+    content {
+      capacity_provider = capacity_provider_strategy.value.capacity_provider
+      weight            = capacity_provider_strategy.value.weight
+    }
   }
 
   dynamic "ordered_placement_strategy" {

@@ -59,7 +59,16 @@ variable "service_healthcheck" {
 
 }
 
+
 variable "service_launch_type" {
+  type = list(object({
+    capacity_provider = string
+    weight            = number
+  }))
+  default = [{
+    capacity_provider = "SPOT"
+    weight            = 100
+  }]
 
 }
 
